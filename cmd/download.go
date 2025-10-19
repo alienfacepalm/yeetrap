@@ -50,7 +50,11 @@ var downloadCmd = &cobra.Command{
 
 		fmt.Printf("Found %d videos to download\n\n", len(videos))
 
-		dl := downloader.NewDownloader(outputDir, quality, concurrent)
+		dl, err := downloader.NewDownloader(outputDir, quality, concurrent)
+		if err != nil {
+			return fmt.Errorf("failed to create downloader: %w", err)
+		}
+		
 		if err := dl.DownloadVideos(videos); err != nil {
 			return fmt.Errorf("download failed: %w", err)
 		}

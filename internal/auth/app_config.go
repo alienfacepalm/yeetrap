@@ -3,7 +3,10 @@ package auth
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+
+	"github.com/AlienFacepalm/YeeTrap/internal/constants"
+	"github.com/AlienFacepalm/YeeTrap/internal/errors"
+	"github.com/AlienFacepalm/YeeTrap/internal/logger"
 )
 
 // AppConfig represents the OAuth2 app configuration
@@ -18,36 +21,40 @@ type AppConfig struct {
 // GetAppInfo returns information about the OAuth2 app setup
 func GetAppInfo() *AppConfig {
 	return &AppConfig{
-		AppName:     "YeeTrap",
+		AppName:     constants.AppName,
 		RedirectURI: "http://localhost:8080/callback",
 	}
 }
 
 // ValidateCredentials checks if the credentials file exists and is valid
 func ValidateCredentials() error {
-	configDir, err := getConfigDir()
+	logger.Debug("Validating credentials file")
+	
+	credPath, err := constants.GetCredentialsPath()
 	if err != nil {
-		return err
+		return errors.WrapConfig(err, "failed to get credentials path")
 	}
 
-	credPath := filepath.Join(configDir, credentialsFile)
 	if _, err := os.Stat(credPath); os.IsNotExist(err) {
-		return fmt.Errorf("credentials file not found at: %s", credPath)
+		return errors.NewConfigError("credentials file not found").
+			WithDetails(fmt.Sprintf("Expected location: %s", credPath))
 	}
 
 	// Try to read and parse the credentials
 	_, err = os.ReadFile(credPath)
 	if err != nil {
-		return fmt.Errorf("unable to read credentials file: %w", err)
+		return errors.WrapFile(err, "unable to read credentials file")
 	}
 
+	logger.Debug("Credentials file validation successful")
 	return nil
 }
 
 // PrintSetupInstructions prints detailed setup instructions
 func PrintSetupInstructions() {
-	configDir, _ := getConfigDir()
-	credPath := filepath.Join(configDir, credentialsFile)
+	logger.Info("Printing setup instructions")
+	
+	credPath, _ := constants.GetCredentialsPath()
 	
 	fmt.Println("🔧 YeeTrap OAuth2 App Setup Instructions")
 	fmt.Println("========================================")
