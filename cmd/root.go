@@ -17,6 +17,7 @@ func Execute() error {
 }
 
 func init() {
+	rootCmd.AddCommand(setupCmd)
 	rootCmd.AddCommand(authCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(downloadCmd)

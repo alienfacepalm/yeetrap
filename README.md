@@ -4,12 +4,14 @@ YeeTrap is a command-line tool for YouTube content creators to download their vi
 
 ## Features
 
-- 🔐 Secure OAuth2 authentication with YouTube
-- 📺 List all videos from your channel
-- ⬇️ Bulk download videos with quality selection
-- ⚡ Concurrent downloads for faster backups
-- 📝 Saves video metadata (description, thumbnail, info JSON)
-- 🎯 Download from any channel you have access to
+- 🔐 **Professional OAuth2 App** - Seamless Google authentication with automatic browser opening
+- 📺 **Smart Video Listing** - List all videos from your channel or any specified channel
+- ⬇️ **Bulk Downloads** - Download multiple videos with quality selection and concurrent processing
+- ⚡ **High Performance** - Concurrent downloads for faster backups
+- 📝 **Complete Metadata** - Saves video description, thumbnail, and info JSON
+- 🎯 **Flexible Access** - Download from any channel you have access to
+- 🛠️ **Easy Setup** - Built-in setup wizard with step-by-step OAuth2 configuration
+- 🔒 **Secure Storage** - Local token storage with automatic refresh
 
 ## Prerequisites
 
@@ -74,6 +76,12 @@ go build -o yeetrap
 
 ### 4. Configure OAuth2 Credentials
 
+**Easy Setup (Recommended):**
+```bash
+yeetrap setup
+```
+
+**Manual Setup:**
 Place your downloaded credentials file at:
 
 - **Windows**: `%USERPROFILE%\.yeetrap\credentials.json`
@@ -81,13 +89,29 @@ Place your downloaded credentials file at:
 
 ## Usage
 
+### Quick Start
+
+```bash
+# 1. Set up OAuth2 (one-time)
+yeetrap setup
+
+# 2. Authenticate with YouTube (one-time)
+yeetrap auth
+
+# 3. List your videos
+yeetrap list --max 10
+
+# 4. Download videos
+yeetrap download --max 5 --quality 720p
+```
+
 ### Authenticate with YouTube
 
 ```bash
 yeetrap auth
 ```
 
-This will open a browser window for you to log in to your Google account and grant access. The access token will be saved locally for future use.
+This will automatically open your browser for Google OAuth2 login. The authentication token is saved locally and reused automatically.
 
 ### List Videos from Your Channel
 

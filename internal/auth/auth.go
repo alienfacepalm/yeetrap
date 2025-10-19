@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strings"
+	"time"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -48,22 +52,46 @@ func NewAuthenticator() (*Authenticator, error) {
 	}, nil
 }
 
-// Authenticate performs the OAuth2 flow
+// Authenticate performs the OAuth2 flow with automatic browser opening
 func (a *Authenticator) Authenticate() error {
-	authURL := a.config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Printf("Go to the following link in your browser:\n%v\n\n", authURL)
-	fmt.Print("Enter the authorization code: ")
+	// Generate a random state for security
+	state := fmt.Sprintf("yeetrap-%d", time.Now().Unix())
+	authURL := a.config.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	
+	fmt.Println("🔐 Starting YouTube authentication...")
+	fmt.Println("📱 Opening browser for Google OAuth2 login...")
+	
+	// Try to open browser automatically
+	if err := openBrowser(authURL); err != nil {
+		fmt.Printf("⚠️  Could not open browser automatically: %v\n", err)
+		fmt.Printf("🌐 Please open this URL in your browser:\n%v\n\n", authURL)
+	} else {
+		fmt.Printf("🌐 Browser opened to: %v\n\n", authURL)
+	}
+	
+	fmt.Println("📋 After logging in and granting permissions:")
+	fmt.Println("   1. You'll be redirected to a page that may show an error (this is normal)")
+	fmt.Println("   2. Copy the authorization code from the URL or page")
+	fmt.Println("   3. Paste it below when prompted")
+	fmt.Println()
+	fmt.Print("🔑 Enter the authorization code: ")
 
 	var authCode string
 	if _, err := fmt.Scan(&authCode); err != nil {
 		return fmt.Errorf("unable to read authorization code: %w", err)
 	}
 
+	// Clean up the auth code (remove any whitespace)
+	authCode = strings.TrimSpace(authCode)
+	
+	fmt.Println("🔄 Exchanging authorization code for access token...")
+	
 	tok, err := a.config.Exchange(context.TODO(), authCode)
 	if err != nil {
 		return fmt.Errorf("unable to retrieve token from web: %w", err)
 	}
 
+	fmt.Println("💾 Saving authentication token...")
 	return a.saveToken(tok)
 }
 
@@ -79,8 +107,6 @@ func (a *Authenticator) GetClient() (*http.Client, error) {
 
 // saveToken saves a token to a file path
 func (a *Authenticator) saveToken(token *oauth2.Token) error {
-	fmt.Printf("Saving credential file to: %s\n", a.tokenPath)
-	
 	// Ensure the directory exists
 	if err := os.MkdirAll(filepath.Dir(a.tokenPath), 0700); err != nil {
 		return err
@@ -92,7 +118,12 @@ func (a *Authenticator) saveToken(token *oauth2.Token) error {
 	}
 	defer f.Close()
 	
-	return json.NewEncoder(f).Encode(token)
+	if err := json.NewEncoder(f).Encode(token); err != nil {
+		return fmt.Errorf("unable to encode token: %w", err)
+	}
+	
+	fmt.Printf("✅ Authentication token saved to: %s\n", a.tokenPath)
+	return nil
 }
 
 // loadToken retrieves a token from a local file
@@ -121,6 +152,24 @@ func getConfigDir() (string, error) {
 	}
 
 	return configDir, nil
+}
+
+// openBrowser opens the specified URL in the default web browser
+func openBrowser(url string) error {
+	var cmd *exec.Cmd
+	
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+	case "darwin":
+		cmd = exec.Command("open", url)
+	case "linux":
+		cmd = exec.Command("xdg-open", url)
+	default:
+		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
+	}
+	
+	return cmd.Start()
 }
 
 
