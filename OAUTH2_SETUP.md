@@ -75,19 +75,23 @@ This will guide you through the entire process step by step.
 1. **Rename the file**:
    - Rename the downloaded file to `credentials.json`
 2. **Create YeeTrap config directory**:
+
    ```bash
    # Windows
    mkdir %USERPROFILE%\.yeetrap
-   
+
    # macOS/Linux
    mkdir -p ~/.yeetrap
    ```
+
 3. **Move the file**:
+
    - Move `credentials.json` to the config directory:
+
    ```
    # Windows
    C:\Users\YourUsername\.yeetrap\credentials.json
-   
+
    # macOS/Linux
    ~/.yeetrap/credentials.json
    ```
@@ -110,31 +114,37 @@ This will guide you through the entire process step by step.
 ## 🔧 OAuth2 App Configuration Details
 
 ### App Information
+
 - **App Name**: YeeTrap
 - **App Type**: Desktop Application
 - **Scopes**: YouTube Data API v3 (read-only)
 - **Redirect URI**: Not required for desktop apps
 
 ### Security Features
+
 - **State Parameter**: Random state token for CSRF protection
 - **Offline Access**: Refresh tokens for long-term access
 - **Local Token Storage**: Encrypted token storage in user's home directory
 
 ### Permissions Requested
+
 - **YouTube Data API v3**: Read access to your YouTube channel and videos
 - **Scope**: `https://www.googleapis.com/auth/youtube.readonly`
 
 ## 🎯 Enhanced Features
 
 ### Automatic Browser Opening
+
 YeeTrap automatically opens your default browser to the Google OAuth2 login page.
 
 ### Cross-Platform Support
+
 - **Windows**: Uses `rundll32 url.dll,FileProtocolHandler`
 - **macOS**: Uses `open` command
 - **Linux**: Uses `xdg-open` command
 
 ### Token Management
+
 - **Automatic Refresh**: Tokens are automatically refreshed when needed
 - **Secure Storage**: Tokens stored with restricted file permissions (600)
 - **Persistent Sessions**: No need to re-authenticate frequently
@@ -144,16 +154,19 @@ YeeTrap automatically opens your default browser to the Google OAuth2 login page
 ### Common Issues
 
 1. **"credentials.json not found"**
+
    - Ensure the file is named exactly `credentials.json`
    - Check the file is in the correct directory
    - Run `yeetrap setup` to verify the path
 
 2. **"Invalid client"**
+
    - Verify the OAuth2 client is configured as "Desktop application"
    - Check that the JSON file is not corrupted
    - Re-download the credentials from Google Cloud Console
 
 3. **"Access blocked"**
+
    - Ensure your email is added as a test user in OAuth consent screen
    - Check that the app is in "Testing" mode (not "In production")
    - Verify the YouTube Data API v3 is enabled

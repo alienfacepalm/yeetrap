@@ -77,6 +77,7 @@ go build -o yeetrap
 ### 4. Configure OAuth2 Credentials
 
 **Easy Setup (Recommended):**
+
 ```bash
 yeetrap setup
 ```
@@ -227,4 +228,3 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 ## Support
 
 If you encounter any issues or have questions, please [open an issue](https://github.com/AlienFacepalm/YeeTrap/issues) on GitHub.
-
