@@ -13,9 +13,10 @@ build-all:
 
 # Clean build artifacts
 clean:
-	rm -f yeetrap yeetrap.exe
-	rm -rf bin/
-	rm -rf downloads/
+	@if exist yeetrap.exe del yeetrap.exe
+	@if exist yeetrap del yeetrap
+	@if exist bin rmdir /s /q bin
+	@if exist downloads rmdir /s /q downloads
 
 # Install dependencies
 deps:
